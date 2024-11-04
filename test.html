@@ -15,7 +15,7 @@
 			const terminal = new Terminal({
 				cols: 80,
 				rows: 24,
-				cursorBlink: true, // 光标闪烁
+				cursorBlink: true, 
 			});
 		
 			// get the container where the terminal will attach
@@ -25,17 +25,35 @@
 			terminal.open(terminalContainer);
 		
 			// welcome message
-			terminal.writeln('Welcome to the Xterm.js terminal!');
-			terminal.writeln('Type commands below:');
+			terminal.writeln('Welcome to Geochemistrypi demo!');
+			terminal.writeln('Try type "geochemistrypi data-mining" to get started :)\n');
+
+			// buffer to store user input
+            let inputBuffer = '';
 		
 			// handle user input
-			terminal.onData(e => {
-				if (e.trim() === 'clear') {
-					terminal.clear();
-				} else {
-					terminal.writeln(`You typed: ${e}`);
-				}
-			});
+            terminal.onData(e => {
+                if (e === '\r') { // detect Enter key
+                    const input = inputBuffer;
+                    if (input === 'clear') {
+                        terminal.clear();
+                    } else if (input === 'geochemistrypi data-mining') {
+						terminal.writeln(""); // add a new line
+                        terminal.writeln('!!');
+                    } else {
+                        terminal.writeln(`Command not found: ${input}`);
+                    }
+                    inputBuffer = ''; // clear input buffer
+                } else if (e === '\u007F') { // detect Backspace key
+                    if (inputBuffer.length > 0) {
+                        inputBuffer = inputBuffer.slice(0, -1);
+                        terminal.write('\b \b'); // remove the last character from the terminal
+                    }
+                } else {
+                    inputBuffer += e;
+                    terminal.write(e); // echo the input back to the terminal
+                }
+            });
 		});
 	</script>
 </body>

@@ -27,6 +27,8 @@
 			// welcome message
 			terminal.writeln('Welcome to Geochemistrypi demo!');
 			terminal.writeln('Try type "geochemistrypi data-mining" to get started :)\n');
+			terminal.write('> '); // prompt
+
 
 			// buffer to store user input
             let inputBuffer = '';
@@ -39,11 +41,18 @@
                         terminal.clear();
                     } else if (input === 'geochemistrypi data-mining') {
 						terminal.writeln(""); // add a new line
-                        terminal.writeln('!!');
+						terminal.writeln(`\x1b[34mWelcome to Geochemistry π!\x1b[0m`); // blue text
+						terminal.writeln("Initializing...");
+						terminal.writeln(`\x1b[31mNo Training Data File Provided!\x1b[0m`); // red text
+						terminal.writeln(`\x1b[32mBuilt-in Data Loading.\x1b[0m`); // green text
+						terminal.writeln(`\x1b[31mNo Application Data File Provided!\x1b[0m`);
+						terminal.writeln(`\x1b[32mBuilt-in Application Data Loading.\x1b[0m`);
                     } else {
+						terminal.writeln(""); 
                         terminal.writeln(`Command not found: ${input}`);
                     }
                     inputBuffer = ''; // clear input buffer
+					terminal.write('\n> ');
                 } else if (e === '\u007F') { // detect Backspace key
                     if (inputBuffer.length > 0) {
                         inputBuffer = inputBuffer.slice(0, -1);

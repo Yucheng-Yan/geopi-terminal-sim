@@ -11,67 +11,78 @@
     <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
     <script>
 		document.addEventListener("DOMContentLoaded", function() {
-			// initalize xterm.js
 			const terminal = new Terminal({
 				cols: 80,
 				rows: 24,
 				cursorBlink: true, 
 			});
 		
-			// get the container where the terminal will attach
 			const terminalContainer = document.getElementById('terminal-container');
-		
-			// attach the terminal to the container
 			terminal.open(terminalContainer);
 		
-			// welcome message
 			terminal.writeln('Welcome to Geochemistrypi demo!');
 			terminal.writeln('Try type "geochemistrypi data-mining" to get started :)\n');
 			terminal.write('> '); // prompt
-
-
-			// buffer to store user input
-            let inputBuffer = '';
 		
-			// handle user input
-            terminal.onData(e => {
-                if (e === '\r') { // detect Enter key
-                    if (inputBuffer === 'clear') {
-                        terminal.clear();
-                    } else if (inputBuffer === 'geochemistrypi data-mining') {
-						terminal.writeln(""); // add a new line
-						terminal.writeln(`\x1b[34mWelcome to Geochemistry π!\x1b[0m`); // blue text
-						terminal.writeln("Initializing...");
-						terminal.writeln(`\x1b[31mNo Training Data File Provided!\x1b[0m`); // red text
-						terminal.writeln(`\x1b[32mBuilt-in Data Loading.\x1b[0m`); // green text
-						terminal.writeln(`\x1b[31mNo Application Data File Provided!\x1b[0m`);
-						terminal.writeln(`\x1b[32mBuilt-in Application Data Loading.\x1b[0m`);
-						terminal.writeln(`✨ Press \x1b[35mCtrl + C \x1b[0mto exit our software at any time.`);
-						terminal.writeln(`✨ Input Template \x1b[35m[Option1/Option2]\x1b[36m (Default Value)\x1b[0m: Input Value`);
-						terminal.write(`✨ Use Previous Experiment \x1b[35m[y/n] \x1b[36m(n)\x1b[0m:`);
-						inputBuffer = ''; // clear input buffer
-                    } else if (inputBuffer === 'n') {
-						terminal.writeln("works!!"); //TBD
-					} else {
-						terminal.writeln(""); 
-                        terminal.writeln(`Command not found: ${input}`);
-                    }
-
-					if (!inputBuffer) {
-						inputBuffer = ''; // clear input buffer
-						terminal.write('\n> ');
+			let inputBuffer = '';
+			let currentState = 'command'; // 'command' or 'usePreviousExperiment'
+		
+			terminal.onData(e => {
+				if (e === '\r') { // Enter key
+					if (currentState === 'command') {
+						if (inputBuffer === 'clear') {
+							terminal.clear();
+							inputBuffer = '';
+							terminal.write('> ');
+						} else if (inputBuffer === 'geochemistrypi data-mining') {
+							terminal.writeln("");
+							terminal.writeln(`\x1b[34mWelcome to Geochemistry π!\x1b[0m`);
+							terminal.writeln("Initializing...");
+							terminal.writeln(`\x1b[31mNo Training Data File Provided!\x1b[0m`);
+							terminal.writeln(`\x1b[32mBuilt-in Data Loading.\x1b[0m`);
+							terminal.writeln(`\x1b[31mNo Application Data File Provided!\x1b[0m`);
+							terminal.writeln(`\x1b[32mBuilt-in Application Data Loading.\x1b[0m`);
+							terminal.writeln(`✨ Press \x1b[35mCtrl + C \x1b[0mto exit our software at any time.`);
+							terminal.writeln(`✨ Input Template \x1b[35m[Option1/Option2]\x1b[36m (Default Value)\x1b[0m: Input Value`);
+							terminal.write(`✨ Use Previous Experiment \x1b[35m[y/n] \x1b[36m(n)\x1b[0m: `);
+							inputBuffer = '';
+							currentState = 'usePreviousExperiment';
+						} else {
+							terminal.writeln("");
+							terminal.writeln(`Command not found: ${inputBuffer}`);
+							inputBuffer = '';
+							terminal.write('> ');
+						}
+					} else if (currentState === 'usePreviousExperiment') {
+						if (inputBuffer.toLowerCase() === 'y') {
+							terminal.writeln("");
+							terminal.writeln(`\x1b[32mPrevious Experiment Loaded!\x1b[0m`);
+							// Continue with the next steps
+						} else if (inputBuffer.toLowerCase() === 'n' || inputBuffer === '') {
+							terminal.writeln("");
+							terminal.writeln(`\x1b[31mNo Previous Experiment Loaded!\x1b[0m`);
+							// Continue with the next steps
+						} else {
+							terminal.writeln("");
+							terminal.writeln(`Invalid input: ${inputBuffer}`);
+							terminal.write(`✨ Use Previous Experiment \x1b[35m[y/n] \x1b[36m(n)\x1b[0m: `);
+							inputBuffer = '';
+							return;
+						}
+						inputBuffer = '';
+						currentState = 'command';
+						terminal.write('> ');
 					}
-
-                } else if (e === '\u007F') { // detect Backspace key
-                    if (inputBuffer.length > 0) {
-                        inputBuffer = inputBuffer.slice(0, -1);
-                        terminal.write('\b \b'); // remove the last character from the terminal
-                    }
-                } else {
-                    inputBuffer += e;
-                    terminal.write(e); // echo the input back to the terminal
-                }
-            });
+				} else if (e === '\u007F') { // Backspace
+					if (inputBuffer.length > 0) {
+						inputBuffer = inputBuffer.slice(0, -1);
+						terminal.write('\b \b');
+					}
+				} else {
+					inputBuffer += e;
+					terminal.write(e);
+				}
+			});
 		});
 	</script>
 </body>

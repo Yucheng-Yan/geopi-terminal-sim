@@ -57,6 +57,10 @@
 						if (inputBuffer.toLowerCase() === 'y') {
 							terminal.writeln("");
 							terminal.writeln(`\x1b[32mPrevious Experiment Loaded!\x1b[0m`);
+							inputBuffer = '';
+							currentState = 'command';
+							terminal.writeln("");
+							terminal.write('> ');	
 							// Continue with the next steps
 						} else if (inputBuffer.toLowerCase() === 'n' || inputBuffer === '') {
 							terminal.writeln("");
@@ -70,11 +74,28 @@
 							inputBuffer = '';
 							return;
 						}
+					} else if (currentState === 'newExperiment') {
+						if (inputBuffer.toLowerCase() === 'y') {
+							terminal.writeln("");
+							terminal.writeln(`\x1b[32mNew Experiment Loaded!\x1b[0m`);
+						} else if (inputBuffer.toLowerCase() === 'n' || inputBuffer === '') {
+							terminal.writeln("");
+							terminal.writeln(`\x1b[31mNo Experiment Loaded!\x1b[0m`);
+							inputBuffer = '';
+						} else {
+							terminal.writeln("");
+							terminal.writeln(`Invalid input: ${inputBuffer}`);
+							terminal.write(`✨ New Experiment \x1b[36m(GeoPi - Rock Classification)\x1b[0m: `);
+							inputBuffer = '';
+							return;
+						}
+						// Continue with the next steps
 						inputBuffer = '';
 						currentState = 'command';
 						terminal.writeln("");
 						terminal.write('> ');
 					}
+
 				} else if (e === '\u007F') { // Backspace
 					if (inputBuffer.length > 0) {
 						inputBuffer = inputBuffer.slice(0, -1);
